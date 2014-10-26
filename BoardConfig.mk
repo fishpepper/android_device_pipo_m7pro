@@ -80,7 +80,7 @@ BOARD_HAS_NO_SELECT_BUTTON := true
 PRODUCT_CHARACTERISTICS := tablet
 PRODUCT_PROPERTY_OVERRIDES += sys.device.type=tablet
 
-BOARD_EGL_CFG := device/pipo/m7pro/prebuilt/lib/egl/egl.cfg
+BOARD_EGL_CFG := device/pipo/m7pro/pipo_rom/extracted/system/lib/egl/egl.cfg
 USE_OPENGL_RENDERER := true
 BOARD_USES_HGL := true
 BOARD_USES_OVERLAY := true

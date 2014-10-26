@@ -11,10 +11,9 @@ system/lib/librkswscale.so
 system/lib/librk_on2.so
 system/lib/librk_demux.so
 system/lib/libvpu.so
-system/lib/egl
 system/lib/egl/libEGL_mali.so
 system/lib/egl/libGLESv1_CM_mali.so
-system/lib/egl/egl.cfg
+#copied by BoardConfig.mk#system/lib/egl/egl.cfg
 system/lib/egl/libGLESv2_mali.so
 
 #hw libs
