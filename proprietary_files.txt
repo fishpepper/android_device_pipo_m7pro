@@ -183,14 +183,14 @@ system/etc/wifi/wpa_supplicant_overlay.conf
 system/etc/permissions/com.broadcom.bt.xml
 
 #
-#system/etc/media_profiles.xml
-#system/etc/audio_policy.conf
+system/etc/media_profiles.xml
+system/etc/audio_policy.conf
 system/bin/performance
 #system/lib/libperformance_runtime.so
 system/etc/performance_info.xml
 
-#./etc/audio_effects.conf
-#./etc/media_codecs.xml
+system/etc/audio_effects.conf
+system/etc/media_codecs.xml
 #drmboot.ko
 
 #uevent
