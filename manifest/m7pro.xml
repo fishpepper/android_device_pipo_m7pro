@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+<project path="device/pipo/m7pro" name="fishpepper/android_device_pipo_m7pro" remote="github" revision="master"/>
+</manifest>

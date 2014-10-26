@@ -1,0 +1,362 @@
+import init.rk30board.usb.rc
+#import init.${ro.hardware}.bootmode.${ro.bootmode}.rc
+#import init.${ro.hardware}.environment.rc
+import init.connectivity.rc
+
+on early-init
+    #export SECOND_VOLUME_STORAGE /mnt/external_sd
+    #mkdir /mnt/external_sd 0000 system system
+    #export THIRD_VOLUME_STORAGE /mnt/usb_storage
+    #mkdir /mnt/usb_storage 0000 system system
+    mkdir /metadata 0770 root root
+
+    # Create cgroup mount point for cpu accounting
+    mkdir /acct
+    mount cgroup none /acct cpuacct
+    mkdir /acct/uid
+
+
+on post-fs
+    insmod /system/lib/modules/ump.ko
+    insmod /system/lib/modules/mali.ko mali_dvfs=50,100,133,160,200,266,400 mali_init_clock=50
+    insmod /system/lib/modules/rk30_mirroring.ko
+    insmod /system/lib/modules/rk29-ipp.ko
+
+# AP6476 GPS permission
+    chmod 755 /system/bin/glgps
+    chown root system /system/bin/glgps
+    chmod 644 /system/lib/hw/gps.default.so
+    chown root system /system/lib/hw/gps.default.so
+    mkdir /data/gps
+    chmod 770 /data/gps
+    chown system net_bt_stack /data/gps
+    #test to see if gps socket gets created there
+    mkdir /sdcard
+    chown system net_bt_stack /sdcard
+
+on post-fs-data
+    # we will remap this as /mnt/sdcard with the sdcard fuse tool
+    mkdir /data/media 0770 media_rw media_rw
+    chown media_rw media_rw /data/media
+
+    setprop vold.post_fs_data_done 1
+    start sdcard
+
+on init
+    # for adobe reader mobile
+    #export RK_ADOBE_DE_MOBILE 1
+    #export EBOOK_PAGE_VISIBLE_NUMBER 2　
+    #export RK_ADEPT_DEVICE_TYPE mobile
+    #export RK_ADOBE_DE_DOC_FOLDER "/mnt/sdcard/Digital Editions"
+    #export RK_ADEPT_ACTIVATION_FILE /mnt/sdcard/.adobe-digital-editions/activation.xml
+    #export RK_ADEPT_DEVICE_FILE /mnt/sdcard/.adobe-digital-editions/device.xml
+    #export RK_ADEPT_DEVICE_SALT_FILE /mnt/sdcard/.adobe-digital-editions/devicesalt
+    #export ADOBE_FONTS_DIR  /system/fonts/adobefonts/
+
+    #mkdir /mnt/internal_sd 0000 system system
+    #mkdir /mnt/shell/emulated 0700 shell shell
+    #mkdir /storage/emulated 0555 root root
+
+    mkdir /mnt/shell/emulated 0700 shell shell
+    mkdir /storage/emulated 0555 root root
+
+    mkdir /mnt/media_rw/sdcard1 0700 media_rw media_rw
+    mkdir /storage/sdcard1 0555 root root
+
+    mkdir /mnt/media_rw/sdcard2 0700 media_rw media_rw
+    mkdir /storage/sdcard2 0555 root root
+
+    mkdir /mnt/media_rw/usb_storage 700 media_rw media_rw
+    mkdir /storage/usb_storage  0555 root root
+
+    export EXTERNAL_STORAGE /storage/emulated/legacy
+    export EMULATED_STORAGE_SOURCE /mnt/shell/emulated
+    export EMULATED_STORAGE_TARGET /storage/emulated
+    export SECONDARY_STORAGE /storage/sdcard1
+
+#    mkdir /mnt/media_rw 0700 media_rw media_rw
+#    mkdir /mnt/media_rw/sdcard0 0700 media_rw media_rw
+#    mkdir /storage/sdcard0 0700 root root
+#    symlink /storage/sdcard0 /sdcard
+#    symlink /storage/sdcard0 /mnt/sdcard
+#
+#    export EXTERNAL_STORAGE /storage/sdcard0
+#
+#    # create external sd card mount points
+#    mkdir /storage/sdcard1 0555 root root
+#    symlink /storage/sdcard1 /ext_sdcard
+#    symlink /storage/sdcard1 /mnt/ext_sdcard
+#    export SECONDARY_STORAGE /storage/sdcard1
+#
+#    # create removable USB Mass Storage mountpoints
+    mkdir /storage/usb0 0555 root root
+
+on fs
+    insmod /rk30xxnand_ko.ko
+
+    #mount partitions:
+    mount_all /fstab.rk30board
+    setprop ro.crypto.fuse_sdcard true
+
+on boot
+    setprop UserVolumeLabel "RockChips"
+    mount debugfs /sys/kernel/debug /sys/kernel/debug
+    chown system system /sys/devices/system/cpu/cpu1/online
+    chmod 0660 /sys/devices/system/cpu/cpu1/online
+#    insmod /system/lib/modules/vpu_service.ko
+
+# set RLIMIT_NICE to allow priorities from 19 to -20
+    setrlimit 13 40 40
+
+# Memory management.  Basic kernel parameters, and allow the high
+# level system server to be able to adjust the kernel OOM driver
+# parameters to match how it is managing things.
+    write /proc/sys/vm/overcommit_memory 1
+    write /proc/sys/vm/min_free_order_shift 4
+    chown root system /sys/module/lowmemorykiller/parameters/adj
+    chmod 0664 /sys/module/lowmemorykiller/parameters/adj
+    chown root system /sys/module/lowmemorykiller/parameters/minfree
+    chmod 0664 /sys/module/lowmemorykiller/parameters/minfree
+
+    # Tweak background writeout
+    write /proc/sys/vm/dirty_expire_centisecs 200
+    write /proc/sys/vm/dirty_background_ratio  5
+
+    chown system system /sys/devices/system/cpu/cpufreq/interactive/timer_rate
+    chmod 0660 /sys/devices/system/cpu/cpufreq/interactive/timer_rate
+    chown system system /sys/devices/system/cpu/cpufreq/interactive/timer_slack
+    chmod 0660 /sys/devices/system/cpu/cpufreq/interactive/timer_slack
+    chown system system /sys/devices/system/cpu/cpufreq/interactive/min_sample_time
+    chmod 0660 /sys/devices/system/cpu/cpufreq/interactive/min_sample_time
+    chown system system /sys/devices/system/cpu/cpufreq/interactive/hispeed_freq
+    chmod 0660 /sys/devices/system/cpu/cpufreq/interactive/hispeed_freq
+    chown system system /sys/devices/system/cpu/cpufreq/interactive/target_loads
+    chmod 0660 /sys/devices/system/cpu/cpufreq/interactive/target_loads
+    chown system system /sys/devices/system/cpu/cpufreq/interactive/go_hispeed_load
+    chmod 0660 /sys/devices/system/cpu/cpufreq/interactive/go_hispeed_load
+    chown system system /sys/devices/system/cpu/cpufreq/interactive/above_hispeed_delay
+    chmod 0660 /sys/devices/system/cpu/cpufreq/interactive/above_hispeed_delay
+    chown system system /sys/devices/system/cpu/cpufreq/interactive/boost
+    chmod 0660 /sys/devices/system/cpu/cpufreq/interactive/boost
+    chown system system /sys/devices/system/cpu/cpufreq/interactive/boostpulse
+    chown system system /sys/devices/system/cpu/cpufreq/interactive/input_boost
+    chmod 0660 /sys/devices/system/cpu/cpufreq/interactive/input_boost
+    chown system system /sys/devices/system/cpu/cpufreq/interactive/boostpulse_duration
+    chmod 0660 /sys/devices/system/cpu/cpufreq/interactive/boostpulse_duration
+    chown system system /sys/devices/system/cpu/cpufreq/interactive/io_is_busy
+    chmod 0660 /sys/devices/system/cpu/cpufreq/interactive/io_is_busy
+
+    # Assume SMP uses shared cpufreq policy for all CPUs
+    chown system system /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
+    chmod 0660 /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
+    chown system system /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
+    chmod 0660 /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
+
+    chown system system /sys/class/timed_output/vibrator/enable
+    chown system system /sys/class/leds/keyboard-backlight/brightness
+    chown system system /sys/class/leds/lcd-backlight/brightness
+    chown system system /sys/class/leds/button-backlight/brightness
+    chown system system /sys/class/leds/jogball-backlight/brightness
+    chown system system /sys/class/leds/red/brightness
+    chown system system /sys/class/leds/green/brightness
+    chown system system /sys/class/leds/blue/brightness
+    chown system system /sys/class/leds/red/device/grpfreq
+    chown system system /sys/class/leds/red/device/grppwm
+    chown system system /sys/class/leds/red/device/blink
+    chown system system /sys/class/leds/red/brightness
+    chown system system /sys/class/leds/green/brightness
+    chown system system /sys/class/leds/blue/brightness
+    chown system system /sys/class/leds/red/device/grpfreq
+    chown system system /sys/class/leds/red/device/grppwm
+    chown system system /sys/class/leds/red/device/blink
+    chown system system /sys/class/timed_output/vibrator/enable
+    chown system system /sys/module/sco/parameters/disable_esco
+    chown system system /sys/kernel/ipv4/tcp_wmem_min
+    chown system system /sys/kernel/ipv4/tcp_wmem_def
+    chown system system /sys/kernel/ipv4/tcp_wmem_max
+    chown system system /sys/kernel/ipv4/tcp_rmem_min
+    chown system system /sys/kernel/ipv4/tcp_rmem_def
+    chown system system /sys/kernel/ipv4/tcp_rmem_max
+    chown root system /sys/class/display/HDMI/enable
+    chown root system /sys/class/display/HDMI/mode
+    chown root system /sys/class/display/HDMI/scale
+    chown root radio /proc/cmdline
+
+# Set these so we can remotely update SELinux policy
+    chown system system /sys/fs/selinux/load
+    chown system system /sys/fs/selinux/enforce
+
+
+
+#backlight
+    chown system system /sys/class/backlight/rk28_bl/brightness
+    
+#for hdmi timem out
+   chown root system /sys/class/graphics/fb0/blank
+   chmod 0664 /sys/class/graphics/fb0/blank
+
+    chown system system /sys/mali400_utility/utility
+    chmod 0664 /sys/mali400_utility/utility
+
+    chown system system /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+    chmod 0664 /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+     
+    chown system system /sys/devices/system/cpu/cpu0/cpufreq/scaling_setspeed
+    chmod 0664 /sys/devices/system/cpu/cpu0/cpufreq/scaling_setspeed
+
+#sdcards
+service sdcard /system/bin/sdcard -u 1023 -g 1023 -l /data/media /mnt/shell/emulated
+    class late_start
+
+service fuse_sdcard1 /system/bin/sdcard -u 1023 -g 1023 -w 1023 -d /mnt/media_rw/sdcard1 /storage/sdcard1
+    class late_start
+
+service fuse_sdcard2 /system/bin/sdcard -u 1023 -g 1023 -w 1023 -d /mnt/media_rw/sdcard2 /storage/sdcard2
+    class late_start
+
+service fuse_usb_storage /system/bin/sdcard -u 1023 -g 1023 -w 1023 -d /mnt/media_rw/usb_storage /storage/usb_storage
+    class late_start
+
+#service sdcard /system/bin/sdcard -u 1023 -g 1023 -d /mnt/media_rw/sdcard0 /storage/sdcard0
+#    class late-start
+    
+
+#on property:ro.factory.hasUMS=false
+#    symlink /storage/emulated/legacy /sdcard
+#    symlink /storage/emulated/legacy /mnt/sdcard
+#    symlink /storage/emulated/legacy /storage/sdcard0
+#    symlink /mnt/shell/emulated/0 /storage/emulated/legacy
+#    mount rootfs rootfs / ro remount
+#
+#on property:ro.factory.hasUMS=cdrom
+#    symlink /storage/emulated/legacy /sdcard
+#    symlink /storage/emulated/legacy /mnt/sdcard
+#    symlink /storage/emulated/legacy /storage/sdcard0
+#    symlink /mnt/shell/emulated/0 /storage/emulated/legacy
+#    mount rootfs rootfs / ro remount
+#
+#on property:ro.factory.hasUMS=true
+#    symlink /mnt/internal_sd /sdcard
+#    symlink /mnt/internal_sd /mnt/sdcard
+#    symlink /mnt/internal_sd /storage/sdcard0
+#    mount rootfs rootfs / ro remount
+#    stop sdcard
+
+
+# Binding fuse mount point to /storage/emulated/legacy
+#on property:init.svc.sdcard=running
+#    wait /mnt/shell/emulated/0
+#    mount none /mnt/shell/emulated/0 /storage/emulated/legacy bind
+
+
+service wfd /system/bin/wfd
+    class main
+    disabled
+    oneshot
+
+service dhcpcd_wlan0 /system/bin/dhcpcd -ABKL
+    class main
+    disabled
+    oneshot
+
+service iprenew_wlan0 system/bin/dhcpcd -n
+    class main
+    disabled
+    oneshot
+
+service dhcpcd_p2p /system/bin/dhcpcd -aABKL
+    class main
+    disabled
+    oneshot
+
+service iprenew_p2p system/bin/dhcpcd -n
+    class main
+    disabled
+    oneshot
+# bugreport is triggered by holding down volume down, volume up and power
+service bugreport /system/bin/bugreport.sh
+    class main
+    disabled
+    oneshot
+    keycodes 114 115 116
+
+service chrome /system/bin/chrome.sh
+    class main
+    oneshot
+
+service dhcpcd_eth0 /system/bin/dhcpcd -ABKL
+    class main
+	disabled
+	oneshot
+			
+service iprenew_eth0 system/bin/dhcpcd -n
+    class main
+    disabled
+    oneshot
+
+service dhcpcd_bt-pan /system/bin/dhcpcd -ABKL
+    class main
+    disabled
+    oneshot
+
+service iprenew_bt-pan /system/bin/dhcpcd -n
+    class main
+    disabled
+    oneshot
+
+on property:ro.boot.charger.emmc=1
+    mount ext4 /dev/block/platform/emmc/by-name/system /system wait ro noatime nodiratime
+    start console
+    mount ext4 /dev/block/platform/emmc/by-name/metadata /metadata wait noatime nodiratime nosuid nodev noauto_da_alloc,discard
+    start charger
+
+on property:ro.boot.charger.emmc=0
+    insmod /rk30xxnand_ko.ko
+    mount ext4 mtd@system /system wait ro noatime nodiratime noauto_da_alloc
+    start console
+    mount ext4 mtd@metadata /metadata wait noatime nodiratime nosuid nodev noauto_da_alloc
+    start charger
+
+on charger
+    setprop ro.boot.charger.emmc 0
+    export PATH /sbin:/vendor/bin:/system/sbin:/system/bin:/system/xbin
+    export LD_LIBRARY_PATH /vendor/lib:/system/lib
+    setprop sys.usb.config adb
+
+service charger /charger
+    disabled
+
+service akmd /system/bin/akmd
+        class main
+        user system
+        group system
+        oneshot
+
+on property:sys.gmali.performance=ui
+    start pat_ui
+
+service pat_ui /system/bin/performance ui
+    disabled
+    oneshot
+
+on property:sys.gmali.performance=video
+    start pat_video
+
+#factory
+on property:ro.factory.tool=1     
+    write /sys/class/gsensor_class/orientation gsensor={-1,0,0,0,0,1,0,-1,0}
+    write /sys/devices/platform/rk29-keypad/rk29key {menu:MENU,home:HOME,vol+:VOLUP,vol-:VOLDOWN,play:PLAY,esc:ESC,sensor:CAMERA}
+    write /sys/devices/platform/rk29_backlight/rk29backlight 100
+
+service pat_video /system/bin/performance video
+    disabled
+    oneshot
+
+on property:ro.rk.btchip=broadcom.bplus
+    start gpsd
+
+service gpsd  /system/bin/glgps -c /system/etc/gps/gpsconfig.xml
+    class main
+    disabled
+    user root
+    group system
