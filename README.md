@@ -11,7 +11,7 @@ what is working?
 
 what is not working?
 - gps is not working yet
-- sound (system sounds worked before changing to the pipo rom base, will be fixed)
+- sound (system sounds work, apps not tested yet)
 
 NOT tested:
 - GSM module (mine does not have it)

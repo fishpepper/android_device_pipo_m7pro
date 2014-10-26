@@ -189,6 +189,7 @@ system/bin/performance
 system/etc/performance_info.xml
 
 system/etc/audio_effects.conf
+#without media_codecs.xml we do not have sound in ui (cant connect to power manager)
 system/etc/media_codecs.xml
 #drmboot.ko
 
