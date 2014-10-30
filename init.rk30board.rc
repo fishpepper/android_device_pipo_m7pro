@@ -10,6 +10,9 @@ on early-init
     #mkdir /mnt/usb_storage 0000 system system
     mkdir /metadata 0770 root root
 
+    mkdir /sdcard
+    chown system net_bt_stack /sdcard
+
     # Create cgroup mount point for cpu accounting
     mkdir /acct
     mount cgroup none /acct cpuacct
@@ -30,9 +33,6 @@ on post-fs
     mkdir /data/gps
     chmod 770 /data/gps
     chown system net_bt_stack /data/gps
-    #test to see if gps socket gets created there
-    mkdir /sdcard
-    chown system net_bt_stack /sdcard
 
 on post-fs-data
     # we will remap this as /mnt/sdcard with the sdcard fuse tool

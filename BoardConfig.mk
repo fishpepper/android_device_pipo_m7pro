@@ -103,4 +103,6 @@ WIFI_DRIVER_MODULE_NAME := "wlan"
 
 #bluetooth
 BOARD_HAVE_BLUETOOTH := true
-
+BOARD_HAVE_BLUETOOTH_BCM := true
+BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := device/pipo/m7pro/bluetooth
+BOARD_BLUEDROID_VENDOR_CONF := device/pipo/m7pro/bluetooth/vnd_pipo.txt
