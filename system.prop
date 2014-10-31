@@ -31,4 +31,9 @@ ro.sf.lcd_density=240
 #dalvik fix?!
 dalvik.vm.dexopt-data-only=1
 qemu.hw.mainkeys=0
+#gps
+ro.rk.bt_enable=true
+ro.rk.btchip=broadcom.bplus
+ro.factory.hasGPS=true
+
 

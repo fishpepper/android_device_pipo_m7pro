@@ -3,7 +3,7 @@ TARGET_BUILD_TYPE := debug #release
 $(call inherit-product, $(SRC_TARGET_DIR)/product/languages_full.mk)
 
 # The gps config appropriate for this device
-$(call inherit-product, device/common/gps/gps_us_supl.mk)
+$(call inherit-product, device/common/gps/gps_eu_supl.mk)
 
 $(call inherit-product-if-exists, vendor/pipo/m7pro/m7pro-vendor.mk)
 
