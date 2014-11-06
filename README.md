@@ -40,8 +40,8 @@ paste this to .repo/local_manifests/m7pro.xml:
 	<?xml version="1.0" encoding="UTF-8"?>
 	<manifest>
 	<project path="device/pipo/m7pro" name="fishpepper/android_device_pipo_m7pro" remote="github" revision="master"/>
-	<remove-project name="CyanogenMod/android_packages_apps_Bluetooth" />
-	<project path="packages/apps/Bluetooth" name="fishpepper/android_packages_apps_Bluetooth" remote="github" revision="master"/>
+	<!-- <remove-project name="CyanogenMod/android_packages_apps_Bluetooth" />
+	<project path="packages/apps/Bluetooth" name="fishpepper/android_packages_apps_Bluetooth" remote="github" revision="master"/> -->
 	</manifest>
 ----------------------------------------------------------------
 
