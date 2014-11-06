@@ -40,9 +40,9 @@ PRODUCT_COPY_FILES += $(call find-copy-subdir-files,init.*,device/pipo/m7pro/,ro
 PRODUCT_COPY_FILES += $(call find-copy-subdir-files,fstab.*,device/pipo/m7pro/,root)
 
 #libbluetooth_jni.so
-PRODUCT_COPY_FILES += device/pipo/m7pro/pipo_rom/extracted/system/lib/libbluetooth_jni.so:obj/lib/libbluetooth_jni.so
+#PRODUCT_COPY_FILES += device/pipo/m7pro/pipo_rom/extracted/system/lib/libbluetooth_jni.so:obj/lib/libbluetooth_jni.so
 #bluetooth chipset fm java library (necessary for Bluetooth.apk not to crash with JNI error)
-PRODUCT_COPY_FILES += device/pipo/m7pro/pipo_rom/extracted/system/framework/com.broadcom.bt.jar:common/obj/JAVA_LIBRARIES/com.broadcom.bt_intermediates/javalib.jar
+#PRODUCT_COPY_FILES += device/pipo/m7pro/pipo_rom/extracted/system/framework/com.broadcom.bt.jar:common/obj/JAVA_LIBRARIES/com.broadcom.bt_intermediates/javalib.jar
 
 # copy prebuilt files
 include device/pipo/m7pro/proprietary_files.mk

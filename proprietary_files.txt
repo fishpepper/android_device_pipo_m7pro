@@ -42,7 +42,7 @@ system/lib/hw/camera.rk30board.so
 #we need to use this 4.2.x library because it includes the 
 #code that creates the /data/gps/brcm_... socket for gps:-\
 #(its a one-chip solution, probably bcm2076)
-system/lib/hw/bluetooth.default.so
+##system/lib/hw/bluetooth.default.so
 
 
 root/rk30xxnand_ko.ko.3.0.36+
@@ -85,12 +85,12 @@ system/vendor/firmware/bcm43341b0.hcd
 system/vendor/firmware/nh660.hcd
 system/vendor/lib/libbt-vendor.so
 #bt chip has also an fm radio, this file is neccessary for bt stack:
-system/framework/com.broadcom.bt.jar
+#system/framework/com.broadcom.bt.jar
 #and also the associated lib permission
-system/etc/permissions/com.broadcom.bt.xml
+#system/etc/permissions/com.broadcom.bt.xml
 #system/lib/libbluetoothd.so
 #system/lib/libbluetooth.so
-system/lib/libbluetooth_jni.so
+#system/lib/libbluetooth_jni.so
 #system/etc/bluetooth/auto_pair_devlist.conf
 system/etc/bluetooth/bt_stack.conf
 system/etc/bluetooth/bt_did.conf
